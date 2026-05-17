@@ -1,0 +1,35 @@
+{
+  "records": [
+    { "attributes": { "type": "Contact", "referenceId": "C1" }, "AccountId": "@MGB", "FirstName": "Maya", "LastName": "Chen", "Title": "RN, Onboarding Lead", "Email": "maya.chen@example.com", "Phone": "617-555-0101" },
+    { "attributes": { "type": "Contact", "referenceId": "C2" }, "AccountId": "@MGB", "FirstName": "David", "LastName": "Okafor", "Title": "MD, Internal Medicine", "Email": "david.okafor@example.com", "Phone": "617-555-0102" },
+    { "attributes": { "type": "Contact", "referenceId": "C3" }, "AccountId": "@MGB", "FirstName": "Priya", "LastName": "Ranganathan", "Title": "PA-C", "Email": "priya.r@example.com", "Phone": "617-555-0103" },
+
+    { "attributes": { "type": "Contact", "referenceId": "C4" }, "AccountId": "@KP", "FirstName": "Jordan", "LastName": "Reyes", "Title": "RN, Telemetry", "Email": "jordan.reyes@example.com", "Phone": "510-555-0201" },
+    { "attributes": { "type": "Contact", "referenceId": "C5" }, "AccountId": "@KP", "FirstName": "Sofia", "LastName": "Martinelli", "Title": "MD, Cardiology", "Email": "sofia.m@example.com", "Phone": "510-555-0202" },
+    { "attributes": { "type": "Contact", "referenceId": "C6" }, "AccountId": "@KP", "FirstName": "Marcus", "LastName": "Hill", "Title": "NP, Primary Care", "Email": "marcus.hill@example.com", "Phone": "510-555-0203" },
+
+    { "attributes": { "type": "Contact", "referenceId": "C7" }, "AccountId": "@CC", "FirstName": "Eli", "LastName": "Kapoor", "Title": "MD, Cardiothoracic Surgery", "Email": "eli.k@example.com", "Phone": "216-555-0301" },
+    { "attributes": { "type": "Contact", "referenceId": "C8" }, "AccountId": "@CC", "FirstName": "Tara", "LastName": "Greenwood", "Title": "RN, Surgical ICU", "Email": "tara.g@example.com", "Phone": "216-555-0302" },
+
+    { "attributes": { "type": "Contact", "referenceId": "C9" }, "AccountId": "@MAYO", "FirstName": "Hiro", "LastName": "Watanabe", "Title": "MD, Oncology", "Email": "hiro.w@example.com", "Phone": "507-555-0401" },
+    { "attributes": { "type": "Contact", "referenceId": "C10" }, "AccountId": "@MAYO", "FirstName": "Beatrice", "LastName": "Lund", "Title": "PharmD", "Email": "beatrice.l@example.com", "Phone": "507-555-0402" },
+
+    { "attributes": { "type": "Contact", "referenceId": "C11" }, "AccountId": "@JH", "FirstName": "Imani", "LastName": "Solomon", "Title": "MD, Neurology", "Email": "imani.s@example.com", "Phone": "410-555-0501" },
+    { "attributes": { "type": "Contact", "referenceId": "C12" }, "AccountId": "@JH", "FirstName": "Aaron", "LastName": "Brock", "Title": "RN, Pediatric ICU", "Email": "aaron.b@example.com", "Phone": "410-555-0502" },
+
+    { "attributes": { "type": "Contact", "referenceId": "C13" }, "AccountId": "@UCSF", "FirstName": "Vivian", "LastName": "Park", "Title": "MD, Infectious Disease", "Email": "vivian.p@example.com", "Phone": "415-555-0601" },
+    { "attributes": { "type": "Contact", "referenceId": "C14" }, "AccountId": "@UCSF", "FirstName": "Theo", "LastName": "Aldana", "Title": "RN, ED", "Email": "theo.a@example.com", "Phone": "415-555-0602" },
+
+    { "attributes": { "type": "Contact", "referenceId": "C15" }, "AccountId": "@NYP", "FirstName": "Naomi", "LastName": "Frieden", "Title": "MD, OB/GYN", "Email": "naomi.f@example.com", "Phone": "212-555-0701" },
+    { "attributes": { "type": "Contact", "referenceId": "C16" }, "AccountId": "@NYP", "FirstName": "Caleb", "LastName": "Ortiz", "Title": "PA-C, Emergency Medicine", "Email": "caleb.o@example.com", "Phone": "212-555-0702" },
+
+    { "attributes": { "type": "Contact", "referenceId": "C17" }, "AccountId": "@OAKST", "FirstName": "Reema", "LastName": "Bhatt", "Title": "MD, Geriatrics", "Email": "reema.b@example.com", "Phone": "312-555-0801" },
+    { "attributes": { "type": "Contact", "referenceId": "C18" }, "AccountId": "@OAKST", "FirstName": "Wesley", "LastName": "Tran", "Title": "NP, Primary Care", "Email": "wesley.t@example.com", "Phone": "312-555-0802" },
+
+    { "attributes": { "type": "Contact", "referenceId": "C19" }, "AccountId": "@ONEMED", "FirstName": "Helena", "LastName": "Voss", "Title": "MD, Family Medicine", "Email": "helena.v@example.com", "Phone": "415-555-0901" },
+    { "attributes": { "type": "Contact", "referenceId": "C20" }, "AccountId": "@ONEMED", "FirstName": "Samir", "LastName": "Qureshi", "Title": "RN, Care Coordinator", "Email": "samir.q@example.com", "Phone": "415-555-0902" },
+
+    { "attributes": { "type": "Contact", "referenceId": "C21" }, "AccountId": "@TEL", "FirstName": "Lourdes", "LastName": "Carrasco", "Title": "MD, Telehealth Lead", "Email": "lourdes.c@example.com", "Phone": "914-555-1001" },
+    { "attributes": { "type": "Contact", "referenceId": "C22" }, "AccountId": "@TEL", "FirstName": "Jonas", "LastName": "Eklund", "Title": "PsyD, Behavioral Health", "Email": "jonas.e@example.com", "Phone": "914-555-1002" }
+  ]
+}

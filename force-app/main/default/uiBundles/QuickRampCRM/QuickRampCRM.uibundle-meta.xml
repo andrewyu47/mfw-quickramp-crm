@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UIBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>QuickRamp CRM</masterLabel>
+    <description>QuickRamp's customer-management dashboard — built natively on Salesforce Multi-Framework. Top healthcare-org customers and the clinicians being onboarded at each.</description>
+    <isActive>true</isActive>
+    <version>1</version>
+</UIBundle>

@@ -1,0 +1,104 @@
+{
+  "records": [
+    {
+      "attributes": { "type": "Account", "referenceId": "MGB" },
+      "Name": "Mass General Brigham",
+      "Industry": "Healthcare",
+      "Type": "Customer",
+      "NumberOfEmployees": 82000,
+      "BillingCity": "Boston",
+      "BillingState": "MA",
+      "Website": "https://massgeneralbrigham.org"
+    },
+    {
+      "attributes": { "type": "Account", "referenceId": "KP" },
+      "Name": "Kaiser Permanente Northern California",
+      "Industry": "Healthcare",
+      "Type": "Customer",
+      "NumberOfEmployees": 76000,
+      "BillingCity": "Oakland",
+      "BillingState": "CA",
+      "Website": "https://kp.org"
+    },
+    {
+      "attributes": { "type": "Account", "referenceId": "CC" },
+      "Name": "Cleveland Clinic",
+      "Industry": "Healthcare",
+      "Type": "Customer",
+      "NumberOfEmployees": 67000,
+      "BillingCity": "Cleveland",
+      "BillingState": "OH",
+      "Website": "https://my.clevelandclinic.org"
+    },
+    {
+      "attributes": { "type": "Account", "referenceId": "MAYO" },
+      "Name": "Mayo Clinic Rochester",
+      "Industry": "Healthcare",
+      "Type": "Customer",
+      "NumberOfEmployees": 63000,
+      "BillingCity": "Rochester",
+      "BillingState": "MN",
+      "Website": "https://mayoclinic.org"
+    },
+    {
+      "attributes": { "type": "Account", "referenceId": "JH" },
+      "Name": "Johns Hopkins Medicine",
+      "Industry": "Healthcare",
+      "Type": "Customer",
+      "NumberOfEmployees": 52000,
+      "BillingCity": "Baltimore",
+      "BillingState": "MD",
+      "Website": "https://hopkinsmedicine.org"
+    },
+    {
+      "attributes": { "type": "Account", "referenceId": "UCSF" },
+      "Name": "UCSF Health",
+      "Industry": "Healthcare",
+      "Type": "Customer",
+      "NumberOfEmployees": 27000,
+      "BillingCity": "San Francisco",
+      "BillingState": "CA",
+      "Website": "https://ucsfhealth.org"
+    },
+    {
+      "attributes": { "type": "Account", "referenceId": "NYP" },
+      "Name": "NewYork-Presbyterian Hospital",
+      "Industry": "Healthcare",
+      "Type": "Customer",
+      "NumberOfEmployees": 47000,
+      "BillingCity": "New York",
+      "BillingState": "NY",
+      "Website": "https://nyp.org"
+    },
+    {
+      "attributes": { "type": "Account", "referenceId": "OAKST" },
+      "Name": "Oak Street Health",
+      "Industry": "Healthcare",
+      "Type": "Customer",
+      "NumberOfEmployees": 7200,
+      "BillingCity": "Chicago",
+      "BillingState": "IL",
+      "Website": "https://oakstreethealth.com"
+    },
+    {
+      "attributes": { "type": "Account", "referenceId": "ONEMED" },
+      "Name": "One Medical Group",
+      "Industry": "Healthcare",
+      "Type": "Customer",
+      "NumberOfEmployees": 4100,
+      "BillingCity": "San Francisco",
+      "BillingState": "CA",
+      "Website": "https://onemedical.com"
+    },
+    {
+      "attributes": { "type": "Account", "referenceId": "TEL" },
+      "Name": "Teladoc Health",
+      "Industry": "Healthcare",
+      "Type": "Customer",
+      "NumberOfEmployees": 5800,
+      "BillingCity": "Purchase",
+      "BillingState": "NY",
+      "Website": "https://teladochealth.com"
+    }
+  ]
+}
