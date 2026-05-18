@@ -51,7 +51,7 @@ const VARIANTS: VariantRow[] = [
     key: 'with-docs',
     label: 'Beta MDX prepended',
     what: '97 KB beta-docs MDX prepended as prompt context',
-    pct: 66,
+    pct: 67,
     fraction: '6 / 9',
     verdict: 'partial',
   },
@@ -178,7 +178,7 @@ export default function Eval() {
           On Multi-Framework, <strong>training data is zero</strong> — the runtime didn't exist
           at training time, so the baseline agent invents non-existent APIs like{' '}
           <code>useGraphQL</code> hooks. A <strong>curated SKILL.md hits 100%</strong>. Bulk
-          beta MDX hits 66%. Live retrieval (offered or even directed) is unreliable.
+          beta MDX hits 67%. Live retrieval (offered or even directed) is unreliable.
         </p>
         <p className="text-sm text-gray-700">
           The lesson: <strong>hand-curated, agent-targeted content is the only intervention that
@@ -283,7 +283,7 @@ export default function Eval() {
               <p>
                 The hand-curated SKILL.md (a 7 KB cheat sheet covering the data SDK,
                 GraphQL UIAPI shape, UIBundle metadata, and React Router patterns) scored{' '}
-                <strong>100%</strong> across all three tasks. Bulk MDX hit 66%. Live retrieval
+                <strong>100%</strong> across all three tasks. Bulk MDX hit 67%. Live retrieval
                 hit 33% at best.
               </p>
               <p className="text-xs text-gray-500">

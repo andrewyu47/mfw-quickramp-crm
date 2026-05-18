@@ -117,7 +117,7 @@ const VARIANTS: VariantSpec[] = [
     promptPrefix: '"Use the /{skill-name} skill. {intent}"',
     allowedTools: 'Bash, Read, Write, Edit, Skill, ToolSearch',
     observed:
-      'Loads the hand-curated 7 KB Multi-Framework SKILL.md from `.claude/skills/multiframework/SKILL.md` into the agent\'s context. Contains the data SDK patterns, GraphQL UIAPI shape, UIBundle metadata, and React Router idioms. The only variant that solves all 3 tasks. 9/9 pass.',
+      'Loads the hand-curated 8.5 KB Multi-Framework SKILL.md from `.claude/skills/multiframework/SKILL.md` into the agent\'s context. Contains the data SDK patterns, GraphQL UIAPI shape, UIBundle metadata, and React Router idioms. The only variant that solves all 3 tasks. 9/9 pass.',
   },
   {
     key: 'with-docs',
@@ -461,7 +461,7 @@ export default function TopAccounts() {
                 variants to keep scoring consistent.
                 <br /><br />
                 <strong>Verdict robustness verified.</strong> An earlier grading pass with Haiku
-                4.5 produced <em>identical</em> pass/fail counts across all 63 runs — sign that
+                4.5 produced <em>identical</em> pass/fail counts across all 45 runs — sign that
                 the criteria are explicit enough that judge model capability doesn't change the
                 signal. The qualitative reasoning text differed (Opus's suggestions tend toward
                 methodological improvements; Haiku's tend toward tactical code-level fixes), but
@@ -591,7 +591,7 @@ const result = await dataSdk.graphql?.(QUERY);
         <p className="text-xs text-gray-600 mt-4">
           Source artifacts: <code>tasks/multiframework.yaml</code> (the task spec) +
           <code>.claude/skills/multiframework/SKILL.md</code> (the rules file). Total cost: $3.32
-          for the displayed 54 runs across 6 variants.
+          for the displayed 45 runs across 5 variants.
         </p>
       </section>
 
