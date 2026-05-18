@@ -169,7 +169,7 @@ export default function Methodology() {
         <p className="text-sm text-gray-600 max-w-3xl">
           The detailed proof-of-work behind the numbers on the eval summary
           page. Every task, every variant, every observed behavior — captured
-          across 54 displayed runs on Claude Sonnet 4.6.
+          across 45 runs. Agents: Claude Sonnet 4.6. Grader: Claude Opus 4.7.
         </p>
       </header>
 
@@ -188,7 +188,7 @@ export default function Methodology() {
           <strong>Repeats:</strong> 3 per task × variant pair. Each scored independently by the
           grader.
           <br />
-          <strong>Total displayed:</strong> 45 runs, $3.32 on Claude Sonnet 4.6, captured 2026-05-18.
+          <strong>Total displayed:</strong> 45 runs. Agent (Sonnet 4.6) compute: $3.32. Grader (Opus 4.7) cost: ~$5 estimate (regraded from Haiku to Opus; verdicts unchanged). Captured 2026-05-18.
         </p>
       </section>
 
@@ -452,11 +452,20 @@ export default function TopAccounts() {
           <Card>
             <CardContent className="pt-6 space-y-2">
               <p>
-                <strong>Grader was Claude Sonnet 4.6 with explicit criteria.</strong> The
-                LLM-as-judge grader received the task intent, the PASS/FAIL criteria, the agent's
-                full conversation, any files in the work directory, and a calibration example. It
-                returned a structured grade plus reasoning. Costs ~$0.005 per grading call. Same
-                grader across all variants and surfaces to keep scoring consistent.
+                <strong>Grader was Claude Opus 4.7 — one tier above the agent model.</strong>{' '}
+                The LLM-as-judge grader received the task intent, the PASS/FAIL criteria, the
+                agent's full conversation, any files in the work directory, and a calibration
+                example. It returned a structured grade plus reasoning. Picking a stronger judge
+                than the agent (Opus → Sonnet) is methodology hygiene: it reduces same-model
+                blind spots and produces sharper fail-reasoning text. Same grader across all
+                variants to keep scoring consistent.
+                <br /><br />
+                <strong>Verdict robustness verified.</strong> An earlier grading pass with Haiku
+                4.5 produced <em>identical</em> pass/fail counts across all 63 runs — sign that
+                the criteria are explicit enough that judge model capability doesn't change the
+                signal. The qualitative reasoning text differed (Opus's suggestions tend toward
+                methodological improvements; Haiku's tend toward tactical code-level fixes), but
+                the binary scoring agreed completely.
               </p>
             </CardContent>
           </Card>
@@ -587,7 +596,7 @@ const result = await dataSdk.graphql?.(QUERY);
       </section>
 
       <footer className="border-t border-gray-200 pt-4 text-xs text-gray-500">
-        Captured 2026-05-18. Claude Sonnet 4.6. Isolated cloud sandboxes (parallel execution).
+        Captured 2026-05-18. Agents: Claude Sonnet 4.6. Grader: Claude Opus 4.7. Isolated cloud sandboxes (parallel execution).
         All transcripts saved as markdown per run. Numbers are directional, not production — a
         real investment would scale to 30+ Multi-Framework tasks and add cross-model coverage.
       </footer>

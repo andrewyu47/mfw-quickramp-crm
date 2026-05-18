@@ -343,7 +343,8 @@ export default function Eval() {
         </p>
         <p>
           <strong>Run:</strong> 3 Multi-Framework tasks × 5 variants × 3 repeats = 45 runs.
-          Cost $3.32 on Claude Sonnet 4.6.
+          Agents: Claude Sonnet 4.6. Grader: Claude Opus 4.7 (one tier above the agent — standard
+          methodology hygiene).
         </p>
         <p>
           <strong>Captured:</strong> 2026-05-18. Findings are directional, not production — a
