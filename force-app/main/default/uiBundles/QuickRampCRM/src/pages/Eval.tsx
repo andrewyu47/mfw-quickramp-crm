@@ -6,6 +6,9 @@
  * agents consume Salesforce Multi-Framework docs — and the page itself is
  * built on Multi-Framework, querying nothing from Salesforce (it's static
  * eval data), but rendered through the same React + UI Bundle pipeline.
+ *
+ * Two run rounds: salesforce-mdx-bypass (5 variants, 45 runs) plus the
+ * salesforce-tools-audit follow-up (2 new variants, 18 runs).
  */
 import {
   Card,
@@ -40,17 +43,19 @@ interface TaskRow {
   task: string;
   category: string;
   baseline: string;
+  noTools: string;
   betaDocs: string;
   mcp: string;
   skill: string;
   webfetch: string;
+  forced: string;
 }
 
-const VARIANTS: VariantSummary[] = [
+const PRIMARY_VARIANTS: VariantSummary[] = [
   {
     key: 'baseline',
     label: 'No docs (baseline)',
-    blurb: "Just the agent's training data. The number to beat.",
+    blurb: "Just the agent's training data. Audit confirmed: zero network calls in any of 9 runs.",
     pass: 7,
     total: 9,
     verdict: 'win',
@@ -62,7 +67,6 @@ const VARIANTS: VariantSummary[] = [
     pass: 7,
     total: 9,
     verdict: 'win',
-    highlighted: true,
   },
   {
     key: 'mcp',
@@ -75,18 +79,40 @@ const VARIANTS: VariantSummary[] = [
   {
     key: 'skill',
     label: 'Curated SKILL.md',
-    blurb: '9 KB hand-curated skill. Best variant in the prior run; mid-pack here.',
+    blurb: '9 KB hand-curated skill. Best variant in the prior Pinecone run; mid-pack here.',
     pass: 6,
     total: 9,
     verdict: 'partial',
   },
   {
     key: 'webfetch',
-    label: 'WebFetch (WAF-blocked)',
-    blurb: 'Live WebFetch against developer.salesforce.com. Hits 403s and noise.',
+    label: 'WebFetch (offered, declined)',
+    blurb: 'Tool available, but Sonnet never called it (audit verified). 44% is mostly truncation noise.',
     pass: 4,
     total: 9,
     verdict: 'fail',
+  },
+];
+
+const VALIDATION_VARIANTS: VariantSummary[] = [
+  {
+    key: 'forced',
+    label: 'Forced GitHub fetch',
+    blurb:
+      'Agent directed to fetch raw.githubusercontent.com/.../AGENT.md before answering. Did so on every run. Beats every other variant tested.',
+    pass: 9,
+    total: 9,
+    verdict: 'win',
+    highlighted: true,
+  },
+  {
+    key: 'no-tools',
+    label: 'Tightest baseline (no Edit, no WebFetch, no MCP)',
+    blurb:
+      'Apex 3/3 + SOQL 3/3 from training data alone. LWC 0/3 — multi-file output truncated. Caveat: Bash leaked, used only for mkdir.',
+    pass: 6,
+    total: 9,
+    verdict: 'partial',
   },
 ];
 
@@ -95,28 +121,34 @@ const PER_TASK: TaskRow[] = [
     task: 'apex-account-trigger',
     category: 'Apex',
     baseline: '3 / 3',
+    noTools: '3 / 3',
     betaDocs: '3 / 3',
     mcp: '0 / 3',
     skill: '2 / 3',
     webfetch: '0 / 3',
+    forced: '3 / 3',
   },
   {
     task: 'lwc-contact-list',
     category: 'LWC',
     baseline: '3 / 3',
+    noTools: '0 / 3',
     betaDocs: '1 / 3',
     mcp: '3 / 3',
     skill: '1 / 3',
     webfetch: '1 / 3',
+    forced: '3 / 3',
   },
   {
     task: 'soql-recent-opps',
     category: 'SOQL',
     baseline: '1 / 3',
+    noTools: '3 / 3',
     betaDocs: '3 / 3',
     mcp: '3 / 3',
     skill: '3 / 3',
     webfetch: '3 / 3',
+    forced: '3 / 3',
   },
 ];
 
@@ -128,7 +160,7 @@ function badgeForVerdict(verdict: Verdict, label: string) {
 
 function fractionVerdict(fraction: string): Verdict {
   if (fraction === '3 / 3') return 'win';
-  if (fraction === '2 / 3' || fraction === '1 / 3') return fraction === '2 / 3' ? 'partial' : 'fail';
+  if (fraction === '2 / 3') return 'partial';
   return 'fail';
 }
 
@@ -143,6 +175,27 @@ function fractionCell(fraction: string) {
   return <span className={`tabular-nums ${color}`}>{fraction}</span>;
 }
 
+function VariantCard({ v }: { v: VariantSummary }) {
+  return (
+    <Card
+      className={
+        v.highlighted ? 'border-blue-600 border-2 shadow-md bg-blue-50' : ''
+      }
+    >
+      <CardHeader className="pb-2">
+        <CardDescription className="text-xs uppercase tracking-wide">{v.label}</CardDescription>
+        <CardTitle className="text-3xl tabular-nums">
+          {Math.round((v.pass / v.total) * 100)}%
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        {badgeForVerdict(v.verdict, `${v.pass} / ${v.total} pass`)}
+        <p className="text-xs text-gray-600 leading-snug">{v.blurb}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function Eval() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -150,9 +203,9 @@ export default function Eval() {
         <h1 className="text-3xl font-semibold text-gray-900">AI-Readability Eval</h1>
         <p className="text-sm text-gray-600 max-w-3xl">
           What happens when AI coding agents try to write real Salesforce code
-          (Apex trigger, LWC component, SOQL query) under five different
-          documentation conditions. 45 runs, Sonnet 4.6, 3 repeats per
-          task &times; variant.
+          (Apex trigger, LWC component, SOQL query) under seven different
+          documentation conditions. 63 runs total across two rounds, Sonnet
+          4.6, 3 repeats per task &times; variant.
         </p>
         <p className="text-xs text-gray-500">
           Rendered inside a Salesforce Multi-Framework React app, displaying
@@ -161,41 +214,70 @@ export default function Eval() {
         </p>
       </header>
 
+      <section className="bg-blue-50 border-l-4 border-blue-600 rounded-md p-4 space-y-2">
+        <h2 className="text-sm font-bold text-blue-900 uppercase tracking-wide">The headline</h2>
+        <p className="text-sm text-gray-800">
+          When the agent is <strong>directed to fetch the recipes-repo <code className="bg-blue-100 px-1 rounded text-blue-900">AGENT.md</code> first</strong>,
+          pass rate hits <strong>100% (9/9)</strong> — the strongest single result across every variant tested.
+          The standard <code className="bg-blue-100 px-1 rounded text-blue-900">with-docs-fetch</code> variant
+          sits at 44% because Sonnet declines to fetch on GA-Salesforce tasks even when WebFetch is offered.
+        </p>
+        <p className="text-xs text-gray-700">
+          The fix isn't access; it's the directive. <em>"Have WebFetch"</em> ≠ <em>"use WebFetch."</em>
+        </p>
+      </section>
+
       <section>
         <h2 className="text-xl font-semibold text-gray-900 mb-3">
-          Pass rate by variant
+          Primary run — pass rate by variant
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {VARIANTS.map(v => (
-            <Card
-              key={v.key}
-              className={
-                v.highlighted
-                  ? 'border-blue-600 border-2 shadow-md bg-blue-50'
-                  : ''
-              }
-            >
-              <CardHeader className="pb-2">
-                <CardDescription className="text-xs uppercase tracking-wide">
-                  {v.label}
-                </CardDescription>
-                <CardTitle className="text-3xl tabular-nums">
-                  {Math.round((v.pass / v.total) * 100)}%
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {badgeForVerdict(v.verdict, `${v.pass} / ${v.total} pass`)}
-                <p className="text-xs text-gray-600 leading-snug">{v.blurb}</p>
-              </CardContent>
-            </Card>
+          {PRIMARY_VARIANTS.map(v => (
+            <VariantCard key={v.key} v={v} />
           ))}
         </div>
       </section>
 
       <section>
         <h2 className="text-xl font-semibold text-gray-900 mb-3">
-          Per-task breakdown
+          Validation run — the two follow-up tests
         </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {VALIDATION_VARIANTS.map(v => (
+            <VariantCard key={v.key} v={v} />
+          ))}
+        </div>
+      </section>
+
+      <section className="bg-green-50 border-l-4 border-green-600 rounded-md p-4 space-y-2">
+        <h2 className="text-sm font-bold text-green-900 uppercase tracking-wide">
+          Methodology audit — what the agent actually did
+        </h2>
+        <p className="text-sm text-gray-800">
+          The user's sharp question: <em>is the "no docs" baseline really pure training data, or is the
+          agent sneaking out to GitHub via Bash without being marked as a docs variant?</em>{' '}
+          <strong>Verified by transcript audit: zero network calls in any of 9 baseline runs.</strong> The
+          78% baseline is genuinely pure-training-data.
+        </p>
+        <ul className="text-sm text-gray-800 list-disc list-inside space-y-1">
+          <li>
+            <strong>Baseline:</strong> Write (the answer file) + Bash (only <code className="bg-green-100 px-1 rounded">mkdir</code>{' '}
+            for the LWC bundle directory). Zero WebFetch, zero curl, zero gh.
+          </li>
+          <li>
+            <strong>with-docs-fetch surprise:</strong> the variant that <em>offers</em> WebFetch also
+            recorded zero WebFetch calls. Sonnet declined the offer for these GA tasks. The 44% score is
+            a harness truncation artifact (3 Apex runs had Write tool calls cut off mid-content).
+          </li>
+          <li>
+            <strong>with-fetch-forced verified:</strong> all 9 runs successfully fetched the AGENT.md.
+            100% pass rate. The directive worked.
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">Per-task breakdown (all 7 variants)</h2>
         <div className="bg-white rounded-md border border-gray-200">
           <Table>
             <TableHeader>
@@ -203,10 +285,12 @@ export default function Eval() {
                 <TableHead>Task</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead className="text-center">No docs</TableHead>
+                <TableHead className="text-center">No-tools</TableHead>
                 <TableHead className="text-center text-blue-700">Beta MDX</TableHead>
                 <TableHead className="text-center">MCP</TableHead>
                 <TableHead className="text-center">SKILL.md</TableHead>
                 <TableHead className="text-center">WebFetch</TableHead>
+                <TableHead className="text-center text-blue-700 font-bold">Forced fetch</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -217,20 +301,24 @@ export default function Eval() {
                     {row.category}
                   </TableCell>
                   <TableCell className="text-center">{fractionCell(row.baseline)}</TableCell>
+                  <TableCell className="text-center">{fractionCell(row.noTools)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.betaDocs)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.mcp)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.skill)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.webfetch)}</TableCell>
+                  <TableCell className="text-center">{fractionCell(row.forced)}</TableCell>
                 </TableRow>
               ))}
               <TableRow className="bg-blue-50">
                 <TableCell className="font-semibold text-gray-900">Overall</TableCell>
                 <TableCell></TableCell>
-                <TableCell className="text-center">{fractionCell('7 / 9' as string)}</TableCell>
-                <TableCell className="text-center">{fractionCell('7 / 9' as string)}</TableCell>
-                <TableCell className="text-center">{fractionCell('6 / 9' as string)}</TableCell>
-                <TableCell className="text-center">{fractionCell('6 / 9' as string)}</TableCell>
-                <TableCell className="text-center">{fractionCell('4 / 9' as string)}</TableCell>
+                <TableCell className="text-center">{fractionCell('7 / 9')}</TableCell>
+                <TableCell className="text-center">{fractionCell('6 / 9')}</TableCell>
+                <TableCell className="text-center">{fractionCell('7 / 9')}</TableCell>
+                <TableCell className="text-center">{fractionCell('6 / 9')}</TableCell>
+                <TableCell className="text-center">{fractionCell('6 / 9')}</TableCell>
+                <TableCell className="text-center">{fractionCell('4 / 9')}</TableCell>
+                <TableCell className="text-center font-bold">{fractionCell('9 / 9')}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -238,61 +326,68 @@ export default function Eval() {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">
-          Three findings worth landing
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">Four findings worth landing</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className="border-t-4 border-blue-600">
             <CardHeader>
-              <CardTitle className="text-base">
-                1. Bypass confirmed (with a footnote)
-              </CardTitle>
+              <CardTitle className="text-base">1. The bypass works when the agent is directed to use it (100%)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-gray-700">
               <p>
-                Feeding the actual beta-docs content doubles WebFetch's score
-                (44% → 78%). On Apex specifically: 0/3 → 3/3. The WAF really
-                is the problem.
+                The single strongest result across every variant: <strong>directing the agent to fetch the
+                recipes-repo AGENT.md before answering yields 9/9 pass.</strong> Beats baseline (78%), Beta
+                MDX (78%), MCP (67%), curated SKILL.md (67%), and standard WebFetch (44%).
               </p>
               <p className="text-xs text-gray-500">
-                Footnote: 78% is also what baseline scored. Closing the WAF
-                gap recovers value; it doesn't add new value the model
-                doesn't already have.
+                <em>Access alone isn't enough.</em> The 44% WebFetch run had the tool available; Sonnet declined
+                to use it. The difference between 44% and 100% is the prompt directive.
               </p>
             </CardContent>
           </Card>
           <Card className="border-t-4 border-gray-600">
             <CardHeader>
-              <CardTitle className="text-base">
-                2. Bulk context = no lift on an established platform
-              </CardTitle>
+              <CardTitle className="text-base">2. Baseline is genuinely pure training data — no leakage</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-gray-700">
               <p>
-                97 KB of beta MDX tied with nothing at all, both at 78%. For
-                an established platform like Salesforce, the model's training
-                data already covers the GA surface well.
+                Transcript audit confirmed <strong>zero <code>curl</code>, <code>gh</code>, or WebFetch
+                calls</strong> across all 9 baseline runs. Only Write and <code>mkdir</code>. The 78% is
+                honest pure-training-data behavior.
               </p>
               <p className="text-xs text-gray-500">
-                The wedge isn't "publish more docs" — it's per-task retrieval
-                that disambiguates the beta surface from the GA surface.
+                The agent's GA-Salesforce training knowledge is genuinely strong. Bulk beta context yields
+                no lift because the model already has the GA patterns.
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="border-t-4 border-amber-600">
+            <CardHeader>
+              <CardTitle className="text-base">3. Bulk beta context yields no lift on an established platform</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm text-gray-700">
+              <p>
+                97 KB of Multi-Framework beta MDX tied with <em>nothing at all</em> at <strong>78%</strong>.
+                The model already covers the GA surface well.
+              </p>
+              <p className="text-xs text-gray-500">
+                Strategic content lesson: "publish more docs" is not winning for AI consumers on an
+                established platform. The wedge is content the agent is <em>directed</em> to read.
               </p>
             </CardContent>
           </Card>
           <Card className="border-t-4 border-red-600">
             <CardHeader>
-              <CardTitle className="text-base">
-                3. Bulk context can actively hurt
-              </CardTitle>
+              <CardTitle className="text-base">4. Bulk context can hurt; small-N harness noise can dominate</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-gray-700">
               <p>
-                LWC dropped from 3/3 (baseline) to 1/3 with the beta MDX in
-                context. The Multi-Framework vocabulary distracts the agent
-                from the GA LWC patterns it already knows.
+                <strong>LWC dropped from 3/3 (baseline) to 1/3 with beta MDX.</strong> And the
+                with-docs-fetch 44% was mostly truncation noise from 3 Apex runs with cut-off Write calls,
+                not docs effect.
               </p>
               <p className="text-xs text-gray-500">
-                Retrieval that's task-relevant beats bulk context every time.
+                Methodology: always audit transcripts before declaring a finding. "WebFetch lost to WAF"
+                was wrong; Sonnet never tried. Honest reporting matters more than a clean narrative.
               </p>
             </CardContent>
           </Card>
@@ -301,15 +396,17 @@ export default function Eval() {
 
       <footer className="border-t border-gray-200 pt-4 text-xs text-gray-500 space-y-1">
         <p>
-          <strong>Harness:</strong> <code>skill-eval</code>{' '}
-          (project-skill-runner), Claude runner, Modal sandboxes, LLM-as-judge
-          grader. Run name: <code>salesforce-mdx-bypass</code>. 45 runs total
-          cost $3.03 on Claude Sonnet 4.6.
+          <strong>Harness:</strong> <code>skill-eval</code> (project-skill-runner), Claude runner, Modal
+          sandboxes, LLM-as-judge grader.
         </p>
         <p>
-          <strong>Source:</strong> Eval data captured 2026-05-15. Findings are
-          directional, not production. Full methodology + raw artifacts in the
-          repo README.
+          <strong>Rounds:</strong> <code>salesforce-mdx-bypass</code> (5 variants, 45 runs, $3.03) +
+          <code>salesforce-tools-audit</code> (2 new variants, 18 runs, $1.18). <strong>Total: 63 runs,
+          $4.21, all on Claude Sonnet 4.6.</strong>
+        </p>
+        <p>
+          <strong>Source:</strong> All data captured 2026-05-15 to 2026-05-17. Findings are directional,
+          not production. Full methodology, raw transcripts, and the harness patch in the repo README.
         </p>
       </footer>
     </div>
