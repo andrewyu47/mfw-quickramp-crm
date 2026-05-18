@@ -162,15 +162,6 @@ const VARIANTS: VariantSpec[] = [
     observed:
       'Attempted to lock down to Read+Write only via `--allowedTools` patch; Bash still leaked at runtime, used only for `mkdir` (no network calls). On Multi-Framework tasks the restricted toolset performed identically to the standard baseline (0/9) — training data alone can\'t produce correct Multi-Framework code regardless of tool availability.',
   },
-  {
-    key: 'with-docs-mcp',
-    label: 'MCP server',
-    promptPrefix:
-      '"You have access to the `search-docs` tool from the docs MCP server. Use it to look up anything you\'re not sure about. {intent}"',
-    allowedTools: 'Bash, Read, Write, Edit, mcp__search-docs',
-    observed:
-      'Excluded from final results. The harness defaulted to a non-Salesforce MCP server, so this variant tested the wrong corpus and isn\'t a clean measurement. There is no public MCP server for Salesforce developer docs as of the test date.',
-  },
 ];
 
 function MfBadge() {
@@ -208,8 +199,7 @@ export default function Methodology() {
           <strong>Suite:</strong> 3 Multi-Framework tasks (React data SDK / UIBundle
           metadata / React Router) authored as a YAML task spec with explicit PASS/FAIL criteria.
           <br />
-          <strong>Variants:</strong> 7 documentation conditions (6 in displayed results — MCP
-          variant excluded due to wrong-corpus issue, see Variants section).
+          <strong>Variants:</strong> 6 documentation conditions (no docs / curated SKILL.md / beta MDX prepended / WebFetch offered / forced GitHub fetch / tightest baseline).
           <br />
           <strong>Repeats:</strong> 3 per task × variant pair. Each scored independently by the
           grader.
@@ -219,7 +209,7 @@ export default function Methodology() {
       </section>
 
       <section>
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">The six tasks</h2>
+        <h2 className="text-2xl font-semibold text-gray-900 mb-4">The three tasks</h2>
         <div className="space-y-4">
           {TASKS.map(task => (
             <Card key={task.id}>
@@ -456,19 +446,6 @@ export default function TopAccounts() {
                 zero <code>WebFetch</code> calls. Only Write (creating the answer file). The 0%
                 baseline on Multi-Framework is genuinely pure-training-data behavior — no covert
                 GitHub access via shell. The agent simply doesn't have the knowledge.
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6 space-y-2">
-              <p>
-                <strong>The MCP variant tested the wrong corpus.</strong> The harness defaults the
-                MCP server name to a non-Salesforce server, so the MCP variant against Salesforce
-                tasks was querying a corpus that doesn't contain Salesforce content. Excluded
-                from displayed results because it isn't a clean measurement.{' '}
-                <strong>There is no public MCP server for Salesforce developer docs as of this
-                test date</strong> — a real gap in the AI-readability surface that a docs team
-                could close in a quarter.
               </p>
             </CardContent>
           </Card>
