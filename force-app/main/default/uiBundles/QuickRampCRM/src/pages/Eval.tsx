@@ -10,7 +10,6 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -22,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 
 type Verdict = 'win' | 'partial' | 'fail';
 
@@ -156,12 +154,6 @@ const MF_TASKS: PerTaskRow[] = [
     forced: '0 / 3',
   },
 ];
-
-function badgeForVerdict(verdict: Verdict, label: string) {
-  if (verdict === 'win') return <Badge className="bg-green-600 hover:bg-green-700">{label}</Badge>;
-  if (verdict === 'partial') return <Badge className="bg-amber-500 hover:bg-amber-600">{label}</Badge>;
-  return <Badge className="bg-red-600 hover:bg-red-700">{label}</Badge>;
-}
 
 function fractionVerdict(fraction: string): Verdict {
   if (fraction === '3 / 3') return 'win';
