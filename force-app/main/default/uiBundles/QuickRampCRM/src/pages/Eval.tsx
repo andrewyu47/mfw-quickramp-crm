@@ -350,8 +350,11 @@ export default function Eval() {
 
       <footer className="border-t border-gray-200 pt-4 text-xs text-gray-500 space-y-1">
         <p>
-          <strong>Harness:</strong> <code>skill-eval</code> (project-skill-runner), Claude
-          runner, Modal sandboxes, LLM-as-judge grader.
+          <strong>How the eval works:</strong> a markdown rules file (the "SKILL.md") plus a
+          set of YAML task specs with explicit PASS/FAIL criteria. Each task × variant × repeat
+          combination runs in an isolated cloud sandbox; the agent's output is then scored by
+          an LLM-as-judge grader using the task's criteria as the rubric. See the methodology
+          page for the SKILL.md format and the per-task criteria lists.
         </p>
         <p>
           <strong>Run:</strong> 3 Multi-Framework tasks × 6 displayed variants × 3 repeats = 54

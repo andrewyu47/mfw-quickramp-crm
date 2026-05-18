@@ -200,8 +200,10 @@ export default function Methodology() {
 
       <section className="bg-gray-50 border-l-4 border-gray-400 rounded-md p-4 text-sm text-gray-800">
         <p>
-          <strong>Harness:</strong> <code>skill-eval</code> (project-skill-runner), Claude runner,
-          Modal sandboxes for parallel execution, LLM-as-judge grader.
+          <strong>How the eval works:</strong> an eval harness that runs each task × variant ×
+          repeat combination in an isolated cloud sandbox (parallel execution), then scores each
+          agent transcript with an LLM-as-judge grader using the task's explicit PASS/FAIL
+          criteria as the rubric.
           <br />
           <strong>Suite:</strong> 3 Multi-Framework tasks (React data SDK / UIBundle
           metadata / React Router) authored as a YAML task spec with explicit PASS/FAIL criteria.
@@ -496,29 +498,132 @@ export default function TopAccounts() {
       </section>
 
       <section>
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">Reproduce it yourself</h2>
-        <div className="bg-gray-900 text-gray-100 rounded-md p-4 text-xs font-mono overflow-x-auto space-y-2 leading-relaxed">
-          <div># 1. Install the harness</div>
-          <div className="text-blue-300">uv tool install project-skill-runner</div>
-          <div className="pt-2"># 2. Run the Multi-Framework suite (7 variants × 3 tasks × 3 repeats)</div>
-          <div className="text-blue-300">
-            SKILL_EVAL_CLAUDE_MODEL=sonnet skill-eval run -s multiframework -r claude --remote -n 3
-            -p 5 --grade
-          </div>
-          <div className="pt-2"># 3. View results</div>
-          <div className="text-blue-300">skill-eval report latest</div>
+        <h2 className="text-2xl font-semibold text-gray-900 mb-4">How the eval is structured</h2>
+        <p className="text-sm text-gray-600 mb-4">
+          The eval reduces to three artifact types — a markdown rules file, a YAML task spec,
+          and a per-run transcript. Everything else (sandbox orchestration, parallel execution,
+          grading) is mechanical once those three are in place.
+        </p>
+
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">1. The SKILL.md — agent rules as markdown</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-gray-700 space-y-2">
+              <p>
+                A hand-curated markdown file at{' '}
+                <code>.claude/skills/&lt;name&gt;/SKILL.md</code> that encodes the patterns,
+                idioms, and pitfalls an agent should follow when solving tasks in this domain.
+                For Multi-Framework that's ~7 KB covering the data SDK, GraphQL UIAPI shape,
+                UIBundle metadata, and React Router patterns.
+              </p>
+              <pre className="text-xs bg-gray-50 border border-gray-200 rounded p-3 overflow-x-auto leading-relaxed">
+{`# Salesforce Multi-Framework Developer Skill
+
+## The data SDK (the single most important pattern)
+
+\`\`\`typescript
+import { createDataSDK, gql } from '@salesforce/sdk-data';
+
+const QUERY = gql\`
+  query SingleContact {
+    uiapi {
+      query {
+        Contact(first: 1) {
+          edges { node { Id Name { value } } }
+        }
+      }
+    }
+  }
+\`;
+
+const dataSdk = await createDataSDK();
+const result = await dataSdk.graphql?.(QUERY);
+\`\`\`
+
+## Pitfalls to avoid
+- ❌ Calling raw \`fetch()\` for a Salesforce endpoint
+- ❌ Forgetting \`.value\` — \`node.Name\` is the wrapper, not the value
+- ...`}
+              </pre>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">2. The task YAML — intent + criteria</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-gray-700 space-y-2">
+              <p>
+                Each task spec declares the prompt the agent receives, the PASS criteria the
+                grader checks, the FAIL conditions that disqualify, and a list of
+                required-string anchors for deterministic spot-checks.
+              </p>
+              <pre className="text-xs bg-gray-50 border border-gray-200 rounded p-3 overflow-x-auto leading-relaxed">
+{`tasks:
+  - id: mfw-graphql-account-query
+    intent: |
+      Write a React component for Salesforce Multi-Framework
+      that uses the @salesforce/sdk-data package to query the
+      top 10 Accounts by AnnualRevenue (descending) via
+      GraphQL UIAPI...
+    category: mfw-data
+    ground_truth:
+      context_refs:
+        - SalesforceBEtaDocs_trimmed.md
+      criteria: |
+        PASS requires:
+        - Imports \`createDataSDK\` and \`gql\` from \`@salesforce/sdk-data\`
+        - Query namespace is \`uiapi.query.Account\`
+        - Fields unwrapped via \`.value\`
+        ...
+      commands:
+        - "createDataSDK"
+        - "gql"
+        - "uiapi"
+        - ".value"`}
+              </pre>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">3. The harness loop</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-gray-700">
+              <ol className="list-decimal list-inside space-y-1">
+                <li>For each <code>(task, variant, repeat)</code> tuple, spin up a fresh sandbox.</li>
+                <li>
+                  Construct the agent's prompt: <code>variant.promptPrefix + task.intent</code>.
+                  Configure allowed tools per the variant's spec.
+                </li>
+                <li>Run the agent. Capture the full conversation transcript as markdown.</li>
+                <li>
+                  Hand the transcript + the task's PASS/FAIL criteria + a calibration example to
+                  an LLM-as-judge grader. The grader returns a structured pass/fail plus
+                  reasoning.
+                </li>
+                <li>
+                  Aggregate by variant and per-task. Audit transcripts for tool-usage patterns
+                  (which variants actually called what tools, what URLs they fetched, etc.) to
+                  catch findings the aggregate score would hide.
+                </li>
+              </ol>
+            </CardContent>
+          </Card>
         </div>
-        <p className="text-xs text-gray-600 mt-3">
-          Reproducible end-to-end. Task YAML at <code>tasks/multiframework.yaml</code>. Curated
-          skill at <code>.claude/skills/multiframework/SKILL.md</code>. Total cost: $3.32 for the
-          displayed 54 runs.
+        <p className="text-xs text-gray-600 mt-4">
+          Source artifacts: <code>tasks/multiframework.yaml</code> (the task spec) +
+          <code>.claude/skills/multiframework/SKILL.md</code> (the rules file). Total cost: $3.32
+          for the displayed 54 runs across 6 variants.
         </p>
       </section>
 
       <footer className="border-t border-gray-200 pt-4 text-xs text-gray-500">
-        Captured 2026-05-18. Claude Sonnet 4.6. Modal sandboxes (parallel=5). All transcripts saved
-        as markdown per run. Numbers are directional, not production — a real investment would scale
-        to 30+ Multi-Framework tasks and add cross-model coverage.
+        Captured 2026-05-18. Claude Sonnet 4.6. Isolated cloud sandboxes (parallel execution).
+        All transcripts saved as markdown per run. Numbers are directional, not production — a
+        real investment would scale to 30+ Multi-Framework tasks and add cross-model coverage.
       </footer>
     </div>
   );
