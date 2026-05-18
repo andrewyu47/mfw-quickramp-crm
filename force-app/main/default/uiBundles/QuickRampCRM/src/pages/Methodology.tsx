@@ -490,7 +490,7 @@ export default function TopAccounts() {
                 A hand-curated markdown file at{' '}
                 <code>.claude/skills/&lt;name&gt;/SKILL.md</code> that encodes the patterns,
                 idioms, and pitfalls an agent should follow when solving tasks in this domain.
-                For Multi-Framework that's ~7 KB covering the data SDK, GraphQL UIAPI shape,
+                For Multi-Framework that's ~8.5 KB covering the data SDK, GraphQL UIAPI shape,
                 UIBundle metadata, and React Router patterns.
               </p>
               <pre className="text-xs bg-gray-50 border border-gray-200 rounded p-3 overflow-x-auto leading-relaxed">
