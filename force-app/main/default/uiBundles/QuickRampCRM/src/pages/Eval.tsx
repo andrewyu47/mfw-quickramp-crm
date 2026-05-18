@@ -45,7 +45,6 @@ interface TaskRow {
   baseline: string;
   noTools: string;
   betaDocs: string;
-  mcp: string;
   skill: string;
   webfetch: string;
   forced: string;
@@ -81,14 +80,6 @@ const VARIANTS: VariantSummary[] = [
     verdict: 'win',
   },
   {
-    key: 'mcp',
-    label: 'MCP (live docs)',
-    blurb: 'Agent retrieves docs via MCP server during the run.',
-    pass: 6,
-    total: 9,
-    verdict: 'partial',
-  },
-  {
     key: 'skill',
     label: 'Curated SKILL.md',
     blurb: '9 KB hand-curated skill file giving the agent task-specific patterns up front.',
@@ -98,7 +89,7 @@ const VARIANTS: VariantSummary[] = [
   },
   {
     key: 'no-tools',
-    label: 'Tightest baseline (no Edit, no MCP)',
+    label: 'Tightest baseline (no Edit, no extras)',
     blurb:
       'Apex 3/3 + SOQL 3/3 from training data alone. LWC 0/3 — multi-file output truncated.',
     pass: 6,
@@ -122,7 +113,6 @@ const PER_TASK: TaskRow[] = [
     baseline: '3 / 3',
     noTools: '3 / 3',
     betaDocs: '3 / 3',
-    mcp: '0 / 3',
     skill: '2 / 3',
     webfetch: '0 / 3',
     forced: '3 / 3',
@@ -133,7 +123,6 @@ const PER_TASK: TaskRow[] = [
     baseline: '3 / 3',
     noTools: '0 / 3',
     betaDocs: '1 / 3',
-    mcp: '3 / 3',
     skill: '1 / 3',
     webfetch: '1 / 3',
     forced: '3 / 3',
@@ -144,7 +133,6 @@ const PER_TASK: TaskRow[] = [
     baseline: '1 / 3',
     noTools: '3 / 3',
     betaDocs: '3 / 3',
-    mcp: '3 / 3',
     skill: '3 / 3',
     webfetch: '3 / 3',
     forced: '3 / 3',
@@ -202,8 +190,8 @@ export default function Eval() {
         <h1 className="text-3xl font-semibold text-gray-900">AI-Readability Eval</h1>
         <p className="text-sm text-gray-600 max-w-3xl">
           What happens when AI coding agents try to write real Salesforce code
-          (Apex trigger, LWC component, SOQL query) under seven different
-          documentation conditions. 63 runs on Sonnet 4.6, 3 repeats per
+          (Apex trigger, LWC component, SOQL query) under six different
+          documentation conditions. 54 runs on Sonnet 4.6, 3 repeats per
           task &times; variant.
         </p>
         <p className="text-xs text-gray-500">
@@ -275,7 +263,6 @@ export default function Eval() {
                 <TableHead className="text-center">No docs</TableHead>
                 <TableHead className="text-center">No-tools</TableHead>
                 <TableHead className="text-center text-blue-700">Beta MDX</TableHead>
-                <TableHead className="text-center">MCP</TableHead>
                 <TableHead className="text-center">SKILL.md</TableHead>
                 <TableHead className="text-center">WebFetch</TableHead>
                 <TableHead className="text-center text-blue-700 font-bold">Forced fetch</TableHead>
@@ -291,7 +278,6 @@ export default function Eval() {
                   <TableCell className="text-center">{fractionCell(row.baseline)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.noTools)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.betaDocs)}</TableCell>
-                  <TableCell className="text-center">{fractionCell(row.mcp)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.skill)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.webfetch)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.forced)}</TableCell>
@@ -303,7 +289,6 @@ export default function Eval() {
                 <TableCell className="text-center">{fractionCell('7 / 9')}</TableCell>
                 <TableCell className="text-center">{fractionCell('6 / 9')}</TableCell>
                 <TableCell className="text-center">{fractionCell('7 / 9')}</TableCell>
-                <TableCell className="text-center">{fractionCell('6 / 9')}</TableCell>
                 <TableCell className="text-center">{fractionCell('6 / 9')}</TableCell>
                 <TableCell className="text-center">{fractionCell('4 / 9')}</TableCell>
                 <TableCell className="text-center font-bold">{fractionCell('9 / 9')}</TableCell>
@@ -324,7 +309,7 @@ export default function Eval() {
               <p>
                 The single strongest result across every variant: <strong>directing the agent to fetch the
                 recipes-repo AGENT.md before answering yields 9/9 pass.</strong> Beats baseline (78%), Beta
-                MDX (78%), MCP (67%), curated SKILL.md (67%), and standard WebFetch (44%).
+                MDX (78%), curated SKILL.md (67%), and standard WebFetch (44%).
               </p>
               <p className="text-xs text-gray-500">
                 <em>Access alone isn't enough.</em> The 44% WebFetch run had the tool available; Sonnet declined
@@ -389,7 +374,7 @@ export default function Eval() {
         </p>
         <p>
           <strong>Rounds:</strong> <code>salesforce-mdx-bypass</code> (5 variants, 45 runs, $3.03) +
-          <code>salesforce-tools-audit</code> (2 new variants, 18 runs, $1.18). <strong>Total: 63 runs,
+          <code>salesforce-tools-audit</code> (2 new variants, 18 runs, $1.18). <strong>Total: 54 runs,
           $4.21, all on Claude Sonnet 4.6.</strong>
         </p>
         <p>
