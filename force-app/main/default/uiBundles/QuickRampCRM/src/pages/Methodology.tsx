@@ -121,12 +121,12 @@ const VARIANTS: VariantSpec[] = [
   },
   {
     key: 'with-docs',
-    label: 'Beta MDX prepended',
+    label: 'devdocs prepended',
     promptPrefix:
-      '"{docs_context}{intent}" — the 97 KB trimmed `SalesforceBEtaDocs_trimmed.md` is prepended to the prompt via the task\'s `context_refs`.',
+      '"{docs_context}{intent}" — 97 KB of trimmed developer docs is prepended to the prompt via the task\'s `context_refs`.',
     allowedTools: 'Bash, Read, Write, Edit',
     observed:
-      'Helped for graphql-account-query and ui-bundle-scaffold (3/3 each) but failed on react-router-detail (0/3 — the routing patterns are mentioned in the MDX but not demonstrated end-to-end). 6/9 overall.',
+      'Helped for graphql-account-query and ui-bundle-scaffold (3/3 each) but failed on react-router-detail (0/3 — the routing patterns are mentioned in the devdocs but not demonstrated end-to-end). 6/9 overall.',
   },
   {
     key: 'with-docs-fetch',
@@ -183,7 +183,7 @@ export default function Methodology() {
           <strong>Suite:</strong> 3 Multi-Framework tasks (React data SDK / UIBundle
           metadata / React Router) authored as a YAML task spec with explicit PASS/FAIL criteria.
           <br />
-          <strong>Variants:</strong> 5 documentation conditions (no docs / curated SKILL.md / beta MDX prepended / WebFetch offered / forced GitHub fetch).
+          <strong>Variants:</strong> 5 documentation conditions (no docs / curated SKILL.md / devdocs prepended / WebFetch offered / forced GitHub fetch).
           <br />
           <strong>Repeats:</strong> 3 per task × variant pair. Each scored independently by the
           grader.
@@ -546,7 +546,7 @@ const result = await dataSdk.graphql?.(QUERY);
     category: mfw-data
     ground_truth:
       context_refs:
-        - SalesforceBEtaDocs_trimmed.md
+        - devdocs_trimmed.md
       criteria: |
         PASS requires:
         - Imports \`createDataSDK\` and \`gql\` from \`@salesforce/sdk-data\`

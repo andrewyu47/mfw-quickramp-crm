@@ -49,8 +49,8 @@ const VARIANTS: VariantRow[] = [
   },
   {
     key: 'with-docs',
-    label: 'Beta MDX prepended',
-    what: '97 KB beta-docs MDX prepended as prompt context',
+    label: 'devdocs prepended',
+    what: '97 KB devdocs prepended as prompt context',
     pct: 67,
     fraction: '6 / 9',
     verdict: 'partial',
@@ -178,7 +178,7 @@ export default function Eval() {
           On Multi-Framework, <strong>training data is zero</strong> — the runtime didn't exist
           at training time, so the baseline agent invents non-existent APIs like{' '}
           <code>useGraphQL</code> hooks. A <strong>curated SKILL.md hits 100%</strong>. Bulk
-          beta MDX hits 67%. Live retrieval (offered or even directed) is unreliable.
+          devdocs prepended hits 67%. Live retrieval (offered or even directed) is unreliable.
         </p>
         <p className="text-sm text-gray-700">
           The lesson: <strong>hand-curated, agent-targeted content is the only intervention that
@@ -229,7 +229,7 @@ export default function Eval() {
                 <TableHead>Task</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead className="text-center text-blue-700">SKILL.md</TableHead>
-                <TableHead className="text-center">Beta MDX</TableHead>
+                <TableHead className="text-center">devdocs</TableHead>
                 <TableHead className="text-center">Forced fetch</TableHead>
                 <TableHead className="text-center">No docs</TableHead>
                 <TableHead className="text-center">WebFetch</TableHead>
@@ -263,7 +263,7 @@ export default function Eval() {
         </div>
         <p className="text-xs text-gray-600 mt-3">
           <strong>SKILL.md is the only variant that solves react-router-detail.</strong> The beta
-          MDX covers React Router in passing but not end-to-end; the curated SKILL.md includes
+          devdocs cover React Router in passing but not end-to-end; the curated SKILL.md includes
           the exact pattern. Forced fetch only worked on the UI bundle scaffold (where AGENT.md
           has direct copy-pasteable examples); on the other tasks the agent fetched but couldn't
           translate to working code in the available turns.
@@ -283,7 +283,7 @@ export default function Eval() {
               <p>
                 The hand-curated SKILL.md (a 7 KB cheat sheet covering the data SDK,
                 GraphQL UIAPI shape, UIBundle metadata, and React Router patterns) scored{' '}
-                <strong>100%</strong> across all three tasks. Bulk MDX hit 67%. Live retrieval
+                <strong>100%</strong> across all three tasks. devdocs hit 67%. Live retrieval
                 hit 33% at best.
               </p>
               <p className="text-xs text-gray-500">
