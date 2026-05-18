@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Clinics from './pages/Clinics';
 import Clinic from './pages/Clinic';
 import Eval from './pages/Eval';
+import Methodology from './pages/Methodology';
 import NotFound from './pages/NotFound';
 
 export const routes: RouteObject[] = [
@@ -30,6 +31,11 @@ export const routes: RouteObject[] = [
         path: 'eval',
         element: <Eval />,
         handle: { showInNavigation: true, label: 'AI-Readability Eval' },
+      },
+      {
+        path: 'eval/methodology',
+        element: <Methodology />,
+        // Detail page reached via the eval summary — not in the nav.
       },
       {
         path: '*',

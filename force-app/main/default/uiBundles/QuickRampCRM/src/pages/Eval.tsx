@@ -7,6 +7,7 @@
  * on Multi-Framework, displaying findings about how AI agents consume
  * Multi-Framework (and GA Salesforce) docs.
  */
+import { Link } from 'react-router';
 import {
   Card,
   CardContent,
@@ -229,6 +230,14 @@ export default function Eval() {
         <p className="text-xs text-gray-500">
           Rendered inside a Salesforce Multi-Framework React app, displaying findings about how AI
           agents consume Salesforce Multi-Framework docs. Meta-narrative intended.
+        </p>
+        <p className="pt-2">
+          <Link
+            to="/eval/methodology"
+            className="inline-flex items-center gap-1 text-sm font-medium text-blue-700 hover:text-blue-900 hover:underline"
+          >
+            View detailed methodology — every task, every variant, every observed behavior →
+          </Link>
         </p>
       </header>
 
