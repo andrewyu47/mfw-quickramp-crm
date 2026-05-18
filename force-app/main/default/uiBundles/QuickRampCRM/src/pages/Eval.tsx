@@ -51,7 +51,19 @@ interface TaskRow {
   forced: string;
 }
 
-const PRIMARY_VARIANTS: VariantSummary[] = [
+// All variants ranked by pass rate descending. The forced-fetch variant is
+// highlighted as the headline result.
+const VARIANTS: VariantSummary[] = [
+  {
+    key: 'forced',
+    label: 'Forced GitHub fetch',
+    blurb:
+      'Agent directed to fetch raw.githubusercontent.com/.../AGENT.md before answering. Did so on every run. Beats every other variant.',
+    pass: 9,
+    total: 9,
+    verdict: 'win',
+    highlighted: true,
+  },
   {
     key: 'baseline',
     label: 'No docs (baseline)',
@@ -85,34 +97,21 @@ const PRIMARY_VARIANTS: VariantSummary[] = [
     verdict: 'partial',
   },
   {
-    key: 'webfetch',
-    label: 'WebFetch (offered, declined)',
-    blurb: 'Tool available, but Sonnet never called it (audit verified). 44% is mostly truncation noise.',
-    pass: 4,
-    total: 9,
-    verdict: 'fail',
-  },
-];
-
-const VALIDATION_VARIANTS: VariantSummary[] = [
-  {
-    key: 'forced',
-    label: 'Forced GitHub fetch',
-    blurb:
-      'Agent directed to fetch raw.githubusercontent.com/.../AGENT.md before answering. Did so on every run. Beats every other variant tested.',
-    pass: 9,
-    total: 9,
-    verdict: 'win',
-    highlighted: true,
-  },
-  {
     key: 'no-tools',
-    label: 'Tightest baseline (no Edit, no WebFetch, no MCP)',
+    label: 'Tightest baseline (no Edit, no MCP)',
     blurb:
-      'Apex 3/3 + SOQL 3/3 from training data alone. LWC 0/3 — multi-file output truncated. Caveat: Bash leaked, used only for mkdir.',
+      'Apex 3/3 + SOQL 3/3 from training data alone. LWC 0/3 — multi-file output truncated.',
     pass: 6,
     total: 9,
     verdict: 'partial',
+  },
+  {
+    key: 'webfetch',
+    label: 'WebFetch (offered, declined)',
+    blurb: 'Tool available, but Sonnet never called it. 44% is mostly truncation noise, not WAF effect.',
+    pass: 4,
+    total: 9,
+    verdict: 'fail',
   },
 ];
 
@@ -204,8 +203,8 @@ export default function Eval() {
         <p className="text-sm text-gray-600 max-w-3xl">
           What happens when AI coding agents try to write real Salesforce code
           (Apex trigger, LWC component, SOQL query) under seven different
-          documentation conditions. 63 runs total across two rounds, Sonnet
-          4.6, 3 repeats per task &times; variant.
+          documentation conditions. 63 runs on Sonnet 4.6, 3 repeats per
+          task &times; variant.
         </p>
         <p className="text-xs text-gray-500">
           Rendered inside a Salesforce Multi-Framework React app, displaying
@@ -229,21 +228,10 @@ export default function Eval() {
 
       <section>
         <h2 className="text-xl font-semibold text-gray-900 mb-3">
-          Primary run — pass rate by variant
+          Pass rate by variant
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          {PRIMARY_VARIANTS.map(v => (
-            <VariantCard key={v.key} v={v} />
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">
-          Validation run — the two follow-up tests
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {VALIDATION_VARIANTS.map(v => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {VARIANTS.map(v => (
             <VariantCard key={v.key} v={v} />
           ))}
         </div>
@@ -277,7 +265,7 @@ export default function Eval() {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">Per-task breakdown (all 7 variants)</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-3">Per-task breakdown</h2>
         <div className="bg-white rounded-md border border-gray-200">
           <Table>
             <TableHeader>
