@@ -23,7 +23,6 @@ import {
 
 interface TaskSpec {
   id: string;
-  surface: 'GA' | 'MF';
   category: string;
   intent: string;
   criteriaPass: string[];
@@ -33,78 +32,7 @@ interface TaskSpec {
 
 const TASKS: TaskSpec[] = [
   {
-    id: 'apex-account-trigger',
-    surface: 'GA',
-    category: 'Apex',
-    intent:
-      'Write an Apex trigger named `AccountLogger` that fires after Account insert. For each newly inserted Account, write a debug log entry containing the Account\'s Name and Id. Output the complete trigger file as it would live at `force-app/main/default/triggers/AccountLogger.trigger`.',
-    criteriaPass: [
-      'File is a `.trigger` declaration (not an Apex class)',
-      'Trigger is named `AccountLogger`',
-      'Fires `after insert` on `Account`',
-      'Iterates over `Trigger.new` as a collection (loop, not single-record access)',
-      'Calls `System.debug(...)` with both the Account\'s Name and Id',
-      'No DML or SOQL inside the loop (bulk-safe)',
-    ],
-    criteriaFail: [
-      'Uses `before insert` or any context other than `after insert`',
-      'Assumes a single record (e.g., `Trigger.new[0]` without a loop)',
-      'Performs DML or SOQL statements inside the `for` loop',
-      'Uses an Apex class instead of a `.trigger` file',
-      'Hardcodes an Account Id',
-    ],
-    requiredStrings: [
-      'trigger AccountLogger on Account (after insert)',
-      'for (Account',
-      'Trigger.new',
-      'System.debug',
-    ],
-  },
-  {
-    id: 'lwc-contact-list',
-    surface: 'GA',
-    category: 'LWC',
-    intent:
-      'Write a Lightning Web Component named `contactList`. The component exposes a public `accountId` property and displays a list of contact names belonging to that account. When `accountId` changes, the list should re-render automatically. Output all three files (js, html, js-meta.xml). Assume an Apex method `ContactController.getContacts(Id accountId)` exists, annotated `@AuraEnabled(cacheable=true)`.',
-    criteriaPass: [
-      'JS file imports `LightningElement`, `api`, and `wire` from `lwc`',
-      'JS imports `getContacts` from `@salesforce/apex/ContactController.getContacts`',
-      'Declares `@api accountId` as a public reactive property',
-      'Uses `@wire(getContacts, { accountId: \'$accountId\' })` so the call re-fires on change',
-      'HTML template uses `for:each` with a `key` attribute',
-      'Meta XML declares an `apiVersion`, `isExposed: true`, and at least one target',
-    ],
-    criteriaFail: [
-      'Uses `@track` on the `accountId` primitive (deprecated for primitives in modern LWC)',
-      'Combines `@track` with `@api` on the same property',
-      'Calls Apex imperatively from `connectedCallback()` instead of `@wire`',
-      'Missing the `key` attribute on the iterated template element',
-    ],
-    requiredStrings: ['import { LightningElement', '@api accountId', '@wire(getContacts', 'for:each=', 'key='],
-  },
-  {
-    id: 'soql-recent-opps',
-    surface: 'GA',
-    category: 'SOQL',
-    intent:
-      'Write a SOQL query that returns the 10 most recently modified Opportunities, sorted by Amount in descending order. The result must include each Opportunity\'s Account Name via relationship traversal. Output the SOQL query as a single statement.',
-    criteriaPass: [
-      '`SELECT` clause includes Opportunity Id, Amount, and `Account.Name` via relationship traversal',
-      '`FROM Opportunity`',
-      '`ORDER BY` includes both `LastModifiedDate DESC` (primary) and `Amount DESC` (secondary)',
-      '`LIMIT 10`',
-    ],
-    criteriaFail: [
-      'Missing the relationship traversal (querying `AccountId` instead of `Account.Name`)',
-      '`LIMIT` is missing or not equal to 10',
-      '`ORDER BY` is missing either `LastModifiedDate DESC` or `Amount DESC`',
-      'Uses `SELECT *` (not valid in SOQL)',
-    ],
-    requiredStrings: ['SELECT', 'Account.Name', 'FROM Opportunity', 'ORDER BY', 'LIMIT 10'],
-  },
-  {
     id: 'mfw-graphql-account-query',
-    surface: 'MF',
     category: 'Data SDK',
     intent:
       'Write a React component for Salesforce Multi-Framework that uses the `@salesforce/sdk-data` package to query the top 10 Accounts by `AnnualRevenue` (descending) via GraphQL UIAPI, and renders them in a list with Name and AnnualRevenue. Output the complete `.tsx` file at `src/pages/TopAccounts.tsx`.',
@@ -129,7 +57,6 @@ const TASKS: TaskSpec[] = [
   },
   {
     id: 'mfw-ui-bundle-scaffold',
-    surface: 'MF',
     category: 'Metadata',
     intent:
       'Output the contents of two metadata files required for a new Salesforce Multi-Framework UI Bundle named `MyAccountsApp`: (1) `MyAccountsApp.uibundle-meta.xml` (Salesforce metadata) and (2) `ui-bundle.json` (app configuration). Output both files in full.',
@@ -152,7 +79,6 @@ const TASKS: TaskSpec[] = [
   },
   {
     id: 'mfw-react-router-detail',
-    surface: 'MF',
     category: 'Routing',
     intent:
       'Write a React Router 7 route configuration plus a detail page component for a Salesforce Multi-Framework app. The route should match `/accounts/:id`, use `useParams` to extract the AccountId, and render a component that queries the matching Account (Name, AnnualRevenue) via a parameterized GraphQL query. Output `src/routes.tsx` and `src/pages/Account.tsx`.',
@@ -191,7 +117,7 @@ const VARIANTS: VariantSpec[] = [
     promptPrefix: '(none — task intent only)',
     allowedTools: 'Bash, Read, Write, Edit',
     observed:
-      'Zero network calls in any of 9 runs. Only Write (the answer file) and Bash (only `mkdir` for the LWC bundle directory). Pure training-data behavior, verified by transcript audit.',
+      'Zero network calls. Only Write (the answer file). Pure training-data behavior — and Multi-Framework didn\'t exist at training time, so the agent fabricates non-existent APIs (e.g., `useGraphQL` and `useQuery` hooks that don\'t exist in the Salesforce SDK). 0/9 pass.',
   },
   {
     key: 'with-skill',
@@ -199,7 +125,7 @@ const VARIANTS: VariantSpec[] = [
     promptPrefix: '"Use the /{skill-name} skill. {intent}"',
     allowedTools: 'Bash, Read, Write, Edit, Skill, ToolSearch',
     observed:
-      'Loads the hand-curated SKILL.md from `.claude/skills/<name>/SKILL.md` into the agent\'s context. On Multi-Framework tasks the SKILL.md is the only variant that solves all 3 tasks (9/9).',
+      'Loads the hand-curated 7 KB Multi-Framework SKILL.md from `.claude/skills/multiframework/SKILL.md` into the agent\'s context. Contains the data SDK patterns, GraphQL UIAPI shape, UIBundle metadata, and React Router idioms. The only variant that solves all 3 tasks. 9/9 pass.',
   },
   {
     key: 'with-docs',
@@ -208,7 +134,7 @@ const VARIANTS: VariantSpec[] = [
       '"{docs_context}{intent}" — the 97 KB trimmed `SalesforceBEtaDocs_trimmed.md` is prepended to the prompt via the task\'s `context_refs`.',
     allowedTools: 'Bash, Read, Write, Edit',
     observed:
-      'On MF tasks, helped for graphql-account-query and ui-bundle-scaffold but failed on react-router-detail (thin coverage of routing patterns in the MDX). On GA tasks, tied with baseline because the model already knows GA — bulk MF context offered no lift.',
+      'Helped for graphql-account-query and ui-bundle-scaffold (3/3 each) but failed on react-router-detail (0/3 — the routing patterns are mentioned in the MDX but not demonstrated end-to-end). 6/9 overall.',
   },
   {
     key: 'with-docs-fetch',
@@ -217,7 +143,7 @@ const VARIANTS: VariantSpec[] = [
       '"You have access to the `WebFetch` tool. If the docs site for the SDK you are working with has an `llms.txt` index, use it. {intent}"',
     allowedTools: 'Bash, Read, Write, Edit, WebFetch',
     observed:
-      'Sonnet declined to fetch on every GA run (audit verified). On MF tasks, the agent occasionally fetched but couldn\'t reach a useful target — `developer.salesforce.com` 403s. 0% on MF, 44% on GA (mostly truncation noise on 3 Apex runs).',
+      'The agent occasionally tried to fetch but couldn\'t reach a useful target — `developer.salesforce.com` 403s automated traffic. Without a fallback target, the agent fell back to fabricating APIs same as baseline. 0/9 pass.',
   },
   {
     key: 'with-fetch-forced',
@@ -226,7 +152,7 @@ const VARIANTS: VariantSpec[] = [
       '"Before writing any code, use WebFetch to retrieve and read https://raw.githubusercontent.com/trailheadapps/multiframework-recipes/main/AGENT.md. Then complete the task."',
     allowedTools: 'Bash, Read, Write, Edit, WebFetch',
     observed:
-      'On GA: all 9 runs fetched the AGENT.md successfully → 100% pass rate. On MF: 6/9 runs fetched, but only the UI bundle scaffold task completed correctly (33% overall). The agent could discover patterns but couldn\'t always translate them to working code in the time budget.',
+      '6/9 runs fetched the AGENT.md successfully, but only the UI bundle scaffold task translated to working code (3/3). On graphql-account-query and react-router-detail, the agent fetched but couldn\'t convert the discovered patterns into correct code in the available turns. 3/9 overall.',
   },
   {
     key: 'without-tools',
@@ -234,7 +160,7 @@ const VARIANTS: VariantSpec[] = [
     promptPrefix: '(none — task intent only)',
     allowedTools: 'Read, Write (Bash leaked in practice)',
     observed:
-      'Attempted to lock down to Read+Write only via `--allowedTools` patch; Bash still leaked at runtime. Used for `mkdir` operations only — no network calls. Apex 3/3 + SOQL 3/3 from training alone; LWC 0/3 from multi-file output truncation.',
+      'Attempted to lock down to Read+Write only via `--allowedTools` patch; Bash still leaked at runtime, used only for `mkdir` (no network calls). On Multi-Framework tasks the restricted toolset performed identically to the standard baseline (0/9) — training data alone can\'t produce correct Multi-Framework code regardless of tool availability.',
   },
   {
     key: 'with-docs-mcp',
@@ -247,14 +173,10 @@ const VARIANTS: VariantSpec[] = [
   },
 ];
 
-function SurfaceBadge({ surface }: { surface: 'GA' | 'MF' }) {
+function MfBadge() {
   return (
-    <span
-      className={`text-xs uppercase tracking-wider font-bold px-2 py-0.5 rounded ${
-        surface === 'GA' ? 'bg-gray-100 text-gray-700' : 'bg-blue-100 text-blue-800'
-      }`}
-    >
-      {surface === 'GA' ? 'GA Salesforce' : 'Multi-Framework'}
+    <span className="text-xs uppercase tracking-wider font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">
+      Multi-Framework
     </span>
   );
 }
@@ -272,7 +194,7 @@ export default function Methodology() {
         <p className="text-sm text-gray-600 max-w-3xl">
           The detailed proof-of-work behind the numbers on the eval summary
           page. Every task, every variant, every observed behavior — captured
-          across 108 runs on Claude Sonnet 4.6.
+          across 54 displayed runs on Claude Sonnet 4.6.
         </p>
       </header>
 
@@ -281,9 +203,8 @@ export default function Methodology() {
           <strong>Harness:</strong> <code>skill-eval</code> (project-skill-runner), Claude runner,
           Modal sandboxes for parallel execution, LLM-as-judge grader.
           <br />
-          <strong>Suites:</strong> 6 tasks total — 3 GA Salesforce (Apex/LWC/SOQL) +
-          3 Multi-Framework (React/GraphQL/metadata). Authored as YAML task specs with explicit
-          PASS/FAIL criteria.
+          <strong>Suite:</strong> 3 Multi-Framework tasks (React data SDK / UIBundle
+          metadata / React Router) authored as a YAML task spec with explicit PASS/FAIL criteria.
           <br />
           <strong>Variants:</strong> 7 documentation conditions (6 in displayed results — MCP
           variant excluded due to wrong-corpus issue, see Variants section).
@@ -291,7 +212,7 @@ export default function Methodology() {
           <strong>Repeats:</strong> 3 per task × variant pair. Each scored independently by the
           grader.
           <br />
-          <strong>Total displayed:</strong> 108 runs across 3 calendar days (2026-05-15 → 05-18).
+          <strong>Total displayed:</strong> 54 runs, $3.32 on Claude Sonnet 4.6, captured 2026-05-18.
         </p>
       </section>
 
@@ -302,7 +223,7 @@ export default function Methodology() {
             <Card key={task.id}>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-1">
-                  <SurfaceBadge surface={task.surface} />
+                  <MfBadge />
                   <span className="text-xs uppercase tracking-wide text-gray-500">
                     {task.category}
                   </span>
@@ -411,7 +332,7 @@ export default function Methodology() {
           <Card className="border-t-4 border-green-600">
             <CardHeader>
               <div className="flex items-center gap-2 mb-1">
-                <SurfaceBadge surface="MF" />
+                <MfBadge />
                 <span className="text-xs uppercase tracking-wide text-green-700 font-bold">PASS</span>
               </div>
               <CardTitle className="text-base">
@@ -466,7 +387,7 @@ export default function TopAccounts() {
           <Card className="border-t-4 border-red-600">
             <CardHeader>
               <div className="flex items-center gap-2 mb-1">
-                <SurfaceBadge surface="MF" />
+                <MfBadge />
                 <span className="text-xs uppercase tracking-wide text-red-700 font-bold">FAIL</span>
               </div>
               <CardTitle className="text-base">
@@ -515,12 +436,13 @@ export default function TopAccounts() {
           <Card>
             <CardContent className="pt-6 space-y-2">
               <p>
-                <strong>The WebFetch variant rarely fetches.</strong> Across 9 GA runs of the
-                "WebFetch (offered)" variant, Sonnet called WebFetch zero times. The agent
-                evaluated the GA tasks as solvable from training data and skipped the fetch.
-                The 44% score on that variant is mostly a truncation artifact from 3 Apex runs
-                with mid-write tool cutoffs, not a WAF effect. Lesson: tool availability ≠ tool
-                use.
+                <strong>The WebFetch variant rarely succeeds.</strong> Sonnet often skips
+                offered tools entirely when it judges a task as solvable from training data
+                alone. On Multi-Framework tasks, where training data is genuinely empty, the
+                agent sometimes did attempt to fetch — but `developer.salesforce.com` returns
+                403 to automated traffic, so the fetch failed and the agent fell back to
+                fabricating APIs same as the baseline. Lesson: tool availability ≠ tool use,
+                and even when used, the target has to be reachable.
               </p>
             </CardContent>
           </Card>
@@ -529,9 +451,9 @@ export default function TopAccounts() {
               <p>
                 <strong>The baseline doesn't leak.</strong> A methodology audit verified that the
                 "no docs" baseline runs produce zero <code>curl</code>, zero <code>gh</code>, and
-                zero <code>WebFetch</code> calls. Only Write (creating the answer file) and Bash
-                (only <code>mkdir</code> for the LWC bundle directory). The 78% GA baseline is
-                genuinely pure-training-data behavior — no covert GitHub access via shell.
+                zero <code>WebFetch</code> calls. Only Write (creating the answer file). The 0%
+                baseline on Multi-Framework is genuinely pure-training-data behavior — no covert
+                GitHub access via shell. The agent simply doesn't have the knowledge.
               </p>
             </CardContent>
           </Card>
@@ -551,7 +473,7 @@ export default function TopAccounts() {
           <Card>
             <CardContent className="pt-6 space-y-2">
               <p>
-                <strong>Multi-file tasks (LWC, react-router) sometimes truncate.</strong> The
+                <strong>Multi-file tasks (react-router, ui-bundle-scaffold) sometimes truncate.</strong> The
                 Write tool call occasionally got cut off mid-content on tasks requiring multiple
                 files. This is a harness limit, not a docs effect — but it depresses pass rates
                 for variants that happen to draw the truncated runs. Worth knowing when reading
@@ -578,31 +500,25 @@ export default function TopAccounts() {
         <div className="bg-gray-900 text-gray-100 rounded-md p-4 text-xs font-mono overflow-x-auto space-y-2 leading-relaxed">
           <div># 1. Install the harness</div>
           <div className="text-blue-300">uv tool install project-skill-runner</div>
-          <div className="pt-2"># 2. Run the GA suite (5 variants, 45 runs)</div>
-          <div className="text-blue-300">
-            SKILL_EVAL_CLAUDE_MODEL=sonnet skill-eval run -s salesforce-platform -r claude --remote
-            -n 3 -p 5 --grade
-          </div>
-          <div className="pt-2"># 3. Run the Multi-Framework suite (7 variants, 63 runs)</div>
+          <div className="pt-2"># 2. Run the Multi-Framework suite (7 variants × 3 tasks × 3 repeats)</div>
           <div className="text-blue-300">
             SKILL_EVAL_CLAUDE_MODEL=sonnet skill-eval run -s multiframework -r claude --remote -n 3
             -p 5 --grade
           </div>
-          <div className="pt-2"># 4. View results</div>
+          <div className="pt-2"># 3. View results</div>
           <div className="text-blue-300">skill-eval report latest</div>
         </div>
         <p className="text-xs text-gray-600 mt-3">
-          Reproducible end-to-end. Task YAMLs at <code>tasks/salesforce-platform.yaml</code> and{' '}
-          <code>tasks/multiframework.yaml</code>. Curated skills at{' '}
-          <code>.claude/skills/&lt;name&gt;/SKILL.md</code>. Total cost: $7.53 for the displayed 108
-          runs.
+          Reproducible end-to-end. Task YAML at <code>tasks/multiframework.yaml</code>. Curated
+          skill at <code>.claude/skills/multiframework/SKILL.md</code>. Total cost: $3.32 for the
+          displayed 54 runs.
         </p>
       </section>
 
       <footer className="border-t border-gray-200 pt-4 text-xs text-gray-500">
-        Captured 2026-05-15 → 2026-05-18. Claude Sonnet 4.6. Modal sandboxes (parallel=5). All
-        transcripts saved as markdown per run. Numbers are directional, not production — a real
-        investment would scale to 30+ tasks per surface and add cross-model coverage.
+        Captured 2026-05-18. Claude Sonnet 4.6. Modal sandboxes (parallel=5). All transcripts saved
+        as markdown per run. Numbers are directional, not production — a real investment would scale
+        to 30+ Multi-Framework tasks and add cross-model coverage.
       </footer>
     </div>
   );
