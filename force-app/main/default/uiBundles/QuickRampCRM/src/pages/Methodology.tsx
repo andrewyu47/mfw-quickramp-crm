@@ -12,14 +12,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 
 interface TaskSpec {
   id: string;
@@ -154,14 +146,6 @@ const VARIANTS: VariantSpec[] = [
     observed:
       '6/9 runs fetched the AGENT.md successfully, but only the UI bundle scaffold task translated to working code (3/3). On graphql-account-query and react-router-detail, the agent fetched but couldn\'t convert the discovered patterns into correct code in the available turns. 3/9 overall.',
   },
-  {
-    key: 'without-tools',
-    label: 'Tightest baseline',
-    promptPrefix: '(none — task intent only)',
-    allowedTools: 'Read, Write (Bash leaked in practice)',
-    observed:
-      'Attempted to lock down to Read+Write only via `--allowedTools` patch; Bash still leaked at runtime, used only for `mkdir` (no network calls). On Multi-Framework tasks the restricted toolset performed identically to the standard baseline (0/9) — training data alone can\'t produce correct Multi-Framework code regardless of tool availability.',
-  },
 ];
 
 function MfBadge() {
@@ -199,12 +183,12 @@ export default function Methodology() {
           <strong>Suite:</strong> 3 Multi-Framework tasks (React data SDK / UIBundle
           metadata / React Router) authored as a YAML task spec with explicit PASS/FAIL criteria.
           <br />
-          <strong>Variants:</strong> 6 documentation conditions (no docs / curated SKILL.md / beta MDX prepended / WebFetch offered / forced GitHub fetch / tightest baseline).
+          <strong>Variants:</strong> 5 documentation conditions (no docs / curated SKILL.md / beta MDX prepended / WebFetch offered / forced GitHub fetch).
           <br />
           <strong>Repeats:</strong> 3 per task × variant pair. Each scored independently by the
           grader.
           <br />
-          <strong>Total displayed:</strong> 54 runs, $3.32 on Claude Sonnet 4.6, captured 2026-05-18.
+          <strong>Total displayed:</strong> 45 runs, $3.32 on Claude Sonnet 4.6, captured 2026-05-18.
         </p>
       </section>
 
@@ -272,42 +256,47 @@ export default function Methodology() {
       </section>
 
       <section>
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">The seven variants</h2>
+        <h2 className="text-2xl font-semibold text-gray-900 mb-4">The five variants</h2>
         <p className="text-sm text-gray-600 mb-4">
           Each variant configures the agent differently — the prompt prefix, the allowed tools,
           and the surrounding context. The whole point of the eval is to isolate which
           configurations actually move outcomes vs which look like they should but don't.
         </p>
-        <div className="bg-white rounded-md border border-gray-200 overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-1/6">Variant</TableHead>
-                <TableHead className="w-1/3">Prompt prefix</TableHead>
-                <TableHead className="w-1/6">Allowed tools</TableHead>
-                <TableHead className="w-1/3">Observed behavior (from transcript audit)</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {VARIANTS.map(v => (
-                <TableRow key={v.key}>
-                  <TableCell>
-                    <div className="font-semibold text-gray-900">{v.label}</div>
-                    <code className="text-xs text-gray-500">{v.key}</code>
-                  </TableCell>
-                  <TableCell className="text-xs text-gray-700 italic leading-relaxed">
+        <div className="space-y-4">
+          {VARIANTS.map(v => (
+            <Card key={v.key}>
+              <CardHeader>
+                <div className="flex items-baseline gap-3">
+                  <CardTitle className="text-base">{v.label}</CardTitle>
+                  <code className="text-xs text-gray-500">{v.key}</code>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <div>
+                  <h4 className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-1">
+                    Prompt prefix
+                  </h4>
+                  <p className="text-gray-700 italic leading-relaxed bg-gray-50 p-3 rounded border-l-2 border-gray-300">
                     {v.promptPrefix}
-                  </TableCell>
-                  <TableCell>
-                    <code className="text-xs text-gray-700">{v.allowedTools}</code>
-                  </TableCell>
-                  <TableCell className="text-xs text-gray-700 leading-relaxed">
-                    {v.observed}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-1">
+                    Allowed tools
+                  </h4>
+                  <code className="text-xs text-gray-800 bg-blue-50 px-2 py-1 rounded">
+                    {v.allowedTools}
+                  </code>
+                </div>
+                <div>
+                  <h4 className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-1">
+                    Observed behavior (from transcript audit)
+                  </h4>
+                  <p className="text-gray-700 leading-relaxed">{v.observed}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </section>
 

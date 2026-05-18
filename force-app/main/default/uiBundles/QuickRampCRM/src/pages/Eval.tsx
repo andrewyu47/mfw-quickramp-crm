@@ -72,14 +72,6 @@ const VARIANTS: VariantRow[] = [
     verdict: 'fail',
   },
   {
-    key: 'without-tools',
-    label: 'Tightest baseline',
-    what: 'No Edit, no WebFetch, no extras — minimal toolset',
-    pct: 0,
-    fraction: '0 / 9',
-    verdict: 'fail',
-  },
-  {
     key: 'with-docs-fetch',
     label: 'WebFetch (offered)',
     what: 'WebFetch tool available, agent decides whether to use it',
@@ -96,7 +88,6 @@ interface PerTaskRow {
   betaDocs: string;
   forced: string;
   baseline: string;
-  noTools: string;
   webfetch: string;
 }
 
@@ -108,7 +99,6 @@ const PER_TASK: PerTaskRow[] = [
     betaDocs: '3 / 3',
     forced: '0 / 3',
     baseline: '0 / 3',
-    noTools: '0 / 3',
     webfetch: '0 / 3',
   },
   {
@@ -118,7 +108,6 @@ const PER_TASK: PerTaskRow[] = [
     betaDocs: '3 / 3',
     forced: '3 / 3',
     baseline: '0 / 3',
-    noTools: '0 / 3',
     webfetch: '0 / 3',
   },
   {
@@ -128,7 +117,6 @@ const PER_TASK: PerTaskRow[] = [
     betaDocs: '0 / 3',
     forced: '0 / 3',
     baseline: '0 / 3',
-    noTools: '0 / 3',
     webfetch: '0 / 3',
   },
 ];
@@ -166,8 +154,8 @@ export default function Eval() {
         <p className="text-sm text-gray-600 max-w-3xl">
           What happens when AI coding agents try to write real Salesforce
           Multi-Framework code (React + GraphQL UIAPI + UIBundle metadata)
-          under six different documentation conditions. 54 displayed runs on
-          Claude Sonnet 4.6, 3 repeats per task × variant.
+          under five different documentation conditions. 45 runs on Claude
+          Sonnet 4.6, 3 repeats per task × variant.
         </p>
         <p className="text-xs text-gray-500">
           Rendered inside a Salesforce Multi-Framework React app, displaying
@@ -244,7 +232,6 @@ export default function Eval() {
                 <TableHead className="text-center">Beta MDX</TableHead>
                 <TableHead className="text-center">Forced fetch</TableHead>
                 <TableHead className="text-center">No docs</TableHead>
-                <TableHead className="text-center">No-tools</TableHead>
                 <TableHead className="text-center">WebFetch</TableHead>
               </TableRow>
             </TableHeader>
@@ -259,7 +246,6 @@ export default function Eval() {
                   <TableCell className="text-center">{fractionCell(row.betaDocs)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.forced)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.baseline)}</TableCell>
-                  <TableCell className="text-center">{fractionCell(row.noTools)}</TableCell>
                   <TableCell className="text-center">{fractionCell(row.webfetch)}</TableCell>
                 </TableRow>
               ))}
@@ -269,7 +255,6 @@ export default function Eval() {
                 <TableCell className="text-center font-bold">{fractionCell('9 / 9')}</TableCell>
                 <TableCell className="text-center">{fractionCell('6 / 9')}</TableCell>
                 <TableCell className="text-center">{fractionCell('3 / 9')}</TableCell>
-                <TableCell className="text-center">{fractionCell('0 / 9')}</TableCell>
                 <TableCell className="text-center">{fractionCell('0 / 9')}</TableCell>
                 <TableCell className="text-center">{fractionCell('0 / 9')}</TableCell>
               </TableRow>
@@ -357,7 +342,7 @@ export default function Eval() {
           page for the SKILL.md format and the per-task criteria lists.
         </p>
         <p>
-          <strong>Run:</strong> 3 Multi-Framework tasks × 6 variants × 3 repeats = 54 runs.
+          <strong>Run:</strong> 3 Multi-Framework tasks × 5 variants × 3 repeats = 45 runs.
           Cost $3.32 on Claude Sonnet 4.6.
         </p>
         <p>
