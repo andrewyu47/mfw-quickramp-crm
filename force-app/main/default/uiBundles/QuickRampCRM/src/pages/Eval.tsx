@@ -357,9 +357,8 @@ export default function Eval() {
           page for the SKILL.md format and the per-task criteria lists.
         </p>
         <p>
-          <strong>Run:</strong> 3 Multi-Framework tasks × 6 displayed variants × 3 repeats = 54
-          displayed runs. Cost $3.32 on Claude Sonnet 4.6. (A seventh variant, MCP, was excluded
-          because no public MCP server for Salesforce developer docs exists; see methodology.)
+          <strong>Run:</strong> 3 Multi-Framework tasks × 6 variants × 3 repeats = 54 runs.
+          Cost $3.32 on Claude Sonnet 4.6.
         </p>
         <p>
           <strong>Captured:</strong> 2026-05-18. Findings are directional, not production — a
