@@ -91,7 +91,7 @@ const VARIANTS: VariantSummary[] = [
   {
     key: 'skill',
     label: 'Curated SKILL.md',
-    blurb: '9 KB hand-curated skill. Best variant in the prior Pinecone run; mid-pack here.',
+    blurb: '9 KB hand-curated skill file giving the agent task-specific patterns up front.',
     pass: 6,
     total: 9,
     verdict: 'partial',
@@ -242,8 +242,8 @@ export default function Eval() {
           Methodology audit — what the agent actually did
         </h2>
         <p className="text-sm text-gray-800">
-          The user's sharp question: <em>is the "no docs" baseline really pure training data, or is the
-          agent sneaking out to GitHub via Bash without being marked as a docs variant?</em>{' '}
+          A methodology question worth verifying: <em>is the "no docs" baseline really pure training data,
+          or is the agent sneaking out to GitHub via Bash without being marked as a docs variant?</em>{' '}
           <strong>Verified by transcript audit: zero network calls in any of 9 baseline runs.</strong> The
           78% baseline is genuinely pure-training-data.
         </p>
