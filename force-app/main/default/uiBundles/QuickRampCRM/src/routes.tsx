@@ -3,6 +3,7 @@ import AppLayout from '@/appLayout';
 import Home from './pages/Home';
 import Clinics from './pages/Clinics';
 import Clinic from './pages/Clinic';
+import Eval from './pages/Eval';
 import NotFound from './pages/NotFound';
 
 export const routes: RouteObject[] = [
@@ -24,6 +25,11 @@ export const routes: RouteObject[] = [
         path: 'clinics/:id',
         element: <Clinic />,
         // Detail page reached via the list — intentionally not in the nav.
+      },
+      {
+        path: 'eval',
+        element: <Eval />,
+        handle: { showInNavigation: true, label: 'AI-Readability Eval' },
       },
       {
         path: '*',
